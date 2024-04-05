@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .output {
+      font-weight: bold;
+      font-size: 18px;
+      color: #4CAF50;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Calculator</h2>
+    <form id="calcForm" onsubmit="calculateSum(event)">
+      <input type="number" id="arg1" placeholder="First Number" required>
+      <input type="number" id="arg2" placeholder="Second Number" required>
+      <input type="number" id="arg3" placeholder="Third Number" required>
+      <button type="submit">Calculate Sum</button>
+    </form>
+    <div class="output" id="result"></div>
+  </div>
+
+  <script>
+    function calculateSum(event) {
+      event.preventDefault(); // Prevent form submission
+
+      const arg1 = document.getElementById('arg1').value;
+      const arg2 = document.getElementById('arg2').value;
+      const arg3 = document.getElementById('arg3').value;
+
+      fetch('/calc', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `arg1=${arg1}&arg2=${arg2}&arg3=${arg3}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('result').textContent = data.result;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  </script>
+</body>
+</html>
