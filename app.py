@@ -11,25 +11,42 @@ def index():
 def calc():
     error = None
     if request.method == 'POST':
-        num1 = int(request.form['arg1'])
-        num2 = int(request.form['arg2'])
-        num3 = int(request.form['arg3'])
+        weight = int(request.form['weight']) # integer between 25 and 100
+        gender = request.form['gender'] # string either M or F
+        height = float(request.form['height']) # float up to 2 decimal places
+        cadence = int(request.form['cadence']) # integer
+        pace_min = int(request.form['pace_min']) # integer from 3 to 7
+        pace_sec = int(request.form['pace_sec']) # integer from 0 to 59
+        slope = float(request.form['slope']) # float given as percentage, 0.0 to 100.0
+        strike = request.form['strike'] # string either RFS, FFS or MFS
+        headwind = float(request.form['headwind']) # float between -1 and 5 m/s
+        surface = request.form['surface'] # string either Road or trail
 
-        sheet = xw.Book("workbook.xlsx").sheets[0]
+        run_sheet = xw.Book("Vimazi 2.0 walking running.xlsx").sheets[1]
+        print(run_sheet.range('C5').value)
 
-        # Change the values of a range of cells
-        sheet.range('A1:A3').value = [[num1], [num2], [num3]]
+        # Change the values of the cells
+        run_sheet.range('C5').value = weight
+        # run_sheet.range('C6').value = gender
+        # run_sheet.range('C7').value = height
+        # run_sheet.range('C8').value = cadence
+        # run_sheet.range('C9').value = strike
+        # run_sheet.range('C11').value = pace_min
+        # run_sheet.range('D11').value = pace_sec
+        # run_sheet.range('C12').value = slope
+        # run_sheet.range('C13').value = headwind
+        # run_sheet.range('C14').value = surface
 
-        sheet.book.save()
+        run_sheet.book.save()
 
         # Read the value from cell A1
-        result = sheet.range('A5').value
+        result = run_sheet.range('J10').value
 
         # Print the cell value
         print(result)
 
         # Close the workbook
-        sheet.book.close()
+        run_sheet.book.close()
 
         return {"result": result}
     abort(404, description="Invalid request")

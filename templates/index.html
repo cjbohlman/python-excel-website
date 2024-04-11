@@ -45,29 +45,54 @@
 <body>
   <div class="container">
     <h2>Calculator</h2>
-    <form id="calcForm" onsubmit="calculateSum(event)">
-      <input type="number" id="arg1" placeholder="First Number" required>
-      <input type="number" id="arg2" placeholder="Second Number" required>
-      <input type="number" id="arg3" placeholder="Third Number" required>
-      <button type="submit">Calculate Sum</button>
+    <form id="calcForm" onsubmit="calculateResult(event)">
+      <input type="number" id="weight" placeholder="Weight (kg)" required>
+      <select name="gender" id="gender-select">
+        <option value="male">M</option>
+        <option value="female">F</option>
+      </select>
+      <input type="height" id="height" placeholder="Height (m)" required>
+      <input type="number" id="cadence" placeholder="Cadence (steps/min)" required>
+      <select name="strike" id="strike-pattern">
+        <option value="RFS">RFS</option>
+        <option value="MFS">MFS</option>
+        <option value="FFS">FFS</option>
+      </select>
+      <p>Pace:</p>
+      <input type="number" id="pace_min" placeholder="Minutes" required>
+      <input type="number" id="pace_sec" placeholder="Seconds" required>
+      <input type="number" id="slope" placeholder="Slope %" required>
+      <input type="number" id="headwind" placeholder="Headwind (m/s)" required>
+      <select name="surface" id="surface">
+        <option value="road">Road</option>
+        <option value="trail">Trail</option>
+      </select>
+      <button type="submit">Calculate</button>
     </form>
     <div class="output" id="result"></div>
   </div>
 
   <script>
-    function calculateSum(event) {
+    function calculateResult(event) {
       event.preventDefault(); // Prevent form submission
 
-      const arg1 = document.getElementById('arg1').value;
-      const arg2 = document.getElementById('arg2').value;
-      const arg3 = document.getElementById('arg3').value;
+      const weight = document.getElementById('weight').value;
+      const gender = document.getElementById('gender-select').value;
+      const height = document.getElementById('height').value;
+      const cadence = document.getElementById('height').value;
+      const pace_min = document.getElementById('pace_min').value;
+      const pace_sec = document.getElementById('pace_sec').value;
+      const slope = document.getElementById('slope').value;
+      const strike = document.getElementById('strike-pattern').value;
+      const headwind = document.getElementById('headwind').value;
+      const surface = document.getElementById('surface').value;
 
       fetch('/calc', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: `arg1=${arg1}&arg2=${arg2}&arg3=${arg3}`
+        body: `weight=${weight}&gender=${gender}&height=${height}&cadence=${cadence}&pace_min=${pace_min}&pace_sec=${pace_sec}&slope=${slope}&strike=${strike}&headwind=${headwind}&surface=${surface}`,
       })
       .then(response => response.json())
       .then(data => {
