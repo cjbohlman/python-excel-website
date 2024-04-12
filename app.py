@@ -1,5 +1,46 @@
 from flask import Flask, request, abort, render_template
 import xlwings as xw
+import os
+
+def validate_inputs(weight, gender, height, cadence, pace_min, pace_sec, slope, strike, headwind, surface):
+    # Validate weight
+    if weight < 25 or weight > 100:
+        return "Weight must be between 25 and 100 kg."
+
+    # Validate gender
+    if not gender:
+        return "Please select a gender."
+
+    # Validate height
+    if height < 0 or height > 3:
+        return "Height must be between 0 and 3 meters."
+
+    # Validate cadence
+    if cadence <= 0:
+        return "Cadence must be a positive number."
+
+    # Validate pace
+    if pace_min < 0 or pace_sec < 0 or pace_sec > 59:
+        return "Pace must be a valid time in minutes and seconds."
+
+    # Validate slope
+    if slope < 0 or slope > 100:
+        return "Slope must be between 0 and 100%."
+
+    # Validate strike pattern
+    if not strike:
+        return "Please select a strike pattern."
+
+    # Validate headwind
+    if headwind < -1 or headwind > 5:
+        return "Headwind must be between -1 and 5 m/s."
+
+    # Validate surface
+    if not surface:
+        return "Please select a surface."
+
+    # If all inputs are valid, return None
+    return None
 
 app = Flask(__name__)
 
@@ -10,6 +51,7 @@ def index():
 @app.route('/calc', methods=['POST'])
 def calc():
     error = None
+    print(request.form)
     if request.method == 'POST':
         weight = int(request.form['weight']) # integer between 25 and 100
         gender = request.form['gender'] # string either M or F
@@ -21,6 +63,8 @@ def calc():
         strike = request.form['strike'] # string either RFS, FFS or MFS
         headwind = float(request.form['headwind']) # float between -1 and 5 m/s
         surface = request.form['surface'] # string either Road or trail
+
+        print(validate_inputs(weight, gender, height, cadence, pace_min, pace_sec, slope, strike, headwind, surface))
 
         run_sheet = xw.Book("Vimazi 2.0 walking running.xlsx").sheets[1]
         print(run_sheet.range('C5').value)
@@ -44,6 +88,11 @@ def calc():
 
         # Print the cell value
         print(result)
+
+        chart = run_sheet.charts[1]
+        print(chart.name)
+        chart_image_path = os.path.join('static', 'chart.png')
+        # chart.api.Export(chart_image_path)
 
         # Close the workbook
         run_sheet.book.close()

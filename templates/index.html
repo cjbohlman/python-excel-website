@@ -1,107 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculator Form</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator Form</title>
+    <style>
+      body {
+        padding: 5rem;
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+      }
 
-    .container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
 
-    form {
-      display: flex;
-      flex-direction: column;
-    }
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
 
-    input {
-      margin-bottom: 15px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
+      .form-group {
+        margin-bottom: 15px;
+      }
 
-    .output {
-      font-weight: bold;
-      font-size: 18px;
-      color: #4CAF50;
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Calculator</h2>
-    <form id="calcForm" onsubmit="calculateResult(event)">
-      <input type="number" id="weight" placeholder="Weight (kg)" required>
-      <select name="gender" id="gender-select">
-        <option value="male">M</option>
-        <option value="female">F</option>
-      </select>
-      <input type="height" id="height" placeholder="Height (m)" required>
-      <input type="number" id="cadence" placeholder="Cadence (steps/min)" required>
-      <select name="strike" id="strike-pattern">
-        <option value="RFS">RFS</option>
-        <option value="MFS">MFS</option>
-        <option value="FFS">FFS</option>
-      </select>
-      <p>Pace:</p>
-      <input type="number" id="pace_min" placeholder="Minutes" required>
-      <input type="number" id="pace_sec" placeholder="Seconds" required>
-      <input type="number" id="slope" placeholder="Slope %" required>
-      <input type="number" id="headwind" placeholder="Headwind (m/s)" required>
-      <select name="surface" id="surface">
-        <option value="road">Road</option>
-        <option value="trail">Trail</option>
-      </select>
-      <button type="submit">Calculate</button>
-    </form>
-    <div class="output" id="result"></div>
-  </div>
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
 
-  <script>
-    function calculateResult(event) {
-      event.preventDefault(); // Prevent form submission
+      input[type="number"],
+      select {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        width: 100%;
+        box-sizing: border-box;
+      }
 
-      const weight = document.getElementById('weight').value;
-      const gender = document.getElementById('gender-select').value;
-      const height = document.getElementById('height').value;
-      const cadence = document.getElementById('height').value;
-      const pace_min = document.getElementById('pace_min').value;
-      const pace_sec = document.getElementById('pace_sec').value;
-      const slope = document.getElementById('slope').value;
-      const strike = document.getElementById('strike-pattern').value;
-      const headwind = document.getElementById('headwind').value;
-      const surface = document.getElementById('surface').value;
+      .pace-inputs {
+        display: flex;
+        gap: 10px;
+      }
 
-      fetch('/calc', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: `weight=${weight}&gender=${gender}&height=${height}&cadence=${cadence}&pace_min=${pace_min}&pace_sec=${pace_sec}&slope=${slope}&strike=${strike}&headwind=${headwind}&surface=${surface}`,
-      })
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('result').textContent = data.result;
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    }
-  </script>
-</body>
+      .pace-inputs div {
+        flex: 1;
+      }
+
+      button[type="submit"] {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button[type="submit"]:hover {
+        background-color: #45a049;
+      }
+
+      .output {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Vimazi Calculator</h2>
+      <form id="calcForm" onsubmit="calculateResult(event)">
+        <div class="form-group">
+          <label for="weight">Weight (kg):</label>
+          <input
+            type="number"
+            id="weight"
+            placeholder="80"
+            min="25"
+            max="100"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="gender-select">Gender:</label>
+          <select name="gender" id="gender-select" required>
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="height">Height (m):</label>
+          <input
+            type="number"
+            id="height"
+            placeholder="1.7"
+            min="0"
+            max="3"
+            step="0.01"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="cadence">Cadence (steps/min):</label>
+          <input
+            type="number"
+            id="cadence"
+            placeholder="170"
+            min="0"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="strike-pattern">Strike Pattern:</label>
+          <select name="strike" id="strike-pattern" required>
+            <option value="">Select pattern</option>
+            <option value="RFS">RFS</option>
+            <option value="MFS">MFS</option>
+            <option value="FFS">FFS</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pace</label>
+          <div class="pace-inputs">
+            <div>
+              <label style="font-size: 12px" for="pace_min">Minutes:</label>
+              <input
+                type="number"
+                id="pace_min"
+                placeholder="5"
+                min="0"
+                required
+              />
+            </div>
+            <div>
+              <label style="font-size: 12px" for="pace_sec">Seconds:</label>
+              <input
+                type="number"
+                id="pace_sec"
+                placeholder="30"
+                min="0"
+                max="59"
+                required
+              />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="slope">Slope (%):</label>
+          <input
+            type="number"
+            id="slope"
+            placeholder="3.3"
+            min="0"
+            max="100"
+            step="0.1"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="headwind">Headwind (m/s):</label>
+          <input
+            type="number"
+            id="headwind"
+            placeholder="2.0"
+            min="-1"
+            max="5"
+            step="0.1"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="surface">Surface:</label>
+          <select name="surface" id="surface" required>
+            <option value="">Select surface</option>
+            <option value="road">Road</option>
+            <option value="trail">Trail</option>
+          </select>
+        </div>
+        <button type="submit">Calculate</button>
+      </form>
+      <div class="output" id="result"></div>
+    </div>
+
+    <script>
+      function calculateResult(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Get input values
+        const weight = document.getElementById("weight").value;
+        const gender = document.getElementById("gender-select").value;
+        const height = document.getElementById("height").value;
+        const cadence = document.getElementById("cadence").value;
+        const paceMin = document.getElementById("pace_min").value;
+        const paceSec = document.getElementById("pace_sec").value;
+        const slope = document.getElementById("slope").value;
+        const strike = document.getElementById("strike-pattern").value;
+        const headwind = document.getElementById("headwind").value;
+        const surface = document.getElementById("surface").value;
+
+        // Validate inputs
+        if (weight < 25 || weight > 100 || isNaN(weight)) {
+          alert("Weight must be between 25 and 100 kg.");
+          return;
+        }
+
+        if (gender === "") {
+          alert("Please select a gender.");
+          return;
+        }
+
+        if (height < 0 || height > 3 || isNaN(height)) {
+          alert("Height must be between 0 and 3 meters.");
+          return;
+        }
+
+        if (cadence <= 0 || isNaN(cadence)) {
+          alert("Cadence must be a positive number.");
+          return;
+        }
+
+        if (
+          paceMin < 0 ||
+          paceSec < 0 ||
+          paceSec > 59 ||
+          isNaN(paceMin) ||
+          isNaN(paceSec)
+        ) {
+          alert("Pace must be a valid time in minutes and seconds.");
+          return;
+        }
+
+        if (slope < 0 || slope > 100 || isNaN(slope)) {
+          alert("Slope must be between 0 and 100%.");
+          return;
+        }
+
+        if (strike === "") {
+          alert("Please select a strike pattern.");
+          return;
+        }
+
+        if (headwind < -1 || headwind > 5 || isNaN(headwind)) {
+          alert("Headwind must be between -1 and 5 m/s.");
+          return;
+        }
+
+        if (surface === "") {
+          alert("Please select a surface.");
+          return;
+        }
+
+        // If all inputs are valid, send data to the server
+        fetch("/calc", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `weight=${weight}&gender=${gender}&height=${height}&cadence=${cadence}&pace_min=${paceMin}&pace_sec=${paceSec}&slope=${slope}&strike=${strike}&headwind=${headwind}&surface=${surface}`,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").textContent = data.result;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </body>
 </html>
