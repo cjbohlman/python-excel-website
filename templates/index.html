@@ -81,6 +81,20 @@
         border-radius: 4px;
         font-size: 16px;
       }
+
+      .error {
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #ffcdd2;
+        border: 1px solid #ef9a9a;
+        border-radius: 4px;
+      }
+
+      .error:empty {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -198,11 +212,84 @@
         <button type="submit">Calculate</button>
       </form>
       <div class="output" id="result"></div>
+      <div class="error" id="error"></div>
     </div>
 
     <script>
+      function showError(errorMessage) {
+        const errorDiv = document.getElementById("error");
+        errorDiv.textContent = errorMessage;
+        document.getElementById("result").textContent = "";
+      }
+
+      function showLoading() {
+        document.getElementById("result").textContent = "Loading...";
+      }
+
+      function validateInputs(weight, gender, height, cadence, paceMin, paceSec, slope, strike, headwind, surface) {
+        // Validate weight
+        if (weight < 25 || weight > 100 || isNaN(weight)) {
+          showError("Weight must be between 25 and 100 kg.");
+          return false;
+        }
+
+        // Validate gender
+        if (gender === "") {
+          showError("Please select a gender.");
+          return false;
+        }
+
+        // Validate height
+        if (height < 0 || height > 3 || isNaN(height)) {
+          showError("Height must be between 0 and 3 meters.");
+          return false;
+        }
+
+        // Validate cadence
+        if (cadence <= 0 || isNaN(cadence)) {
+          showError("Cadence must be a positive number.");
+          return false;
+        }
+
+        // Validate pace
+        if (paceMin < 0 || paceSec < 0 || paceSec > 59 || isNaN(paceMin) || isNaN(paceSec)) {
+          showError("Pace must be a valid time in minutes and seconds.");
+          return false;
+        }
+
+        // Validate slope
+        if (slope < 0 || slope > 100 || isNaN(slope)) {
+          showError("Slope must be between 0 and 100%.");
+          return false;
+        }
+
+        // Validate strike pattern
+        if (strike === "") {
+          showError("Please select a strike pattern.");
+          return false;
+        }
+
+        // Validate headwind
+        if (headwind < -1 || headwind > 5 || isNaN(headwind)) {
+          showError("Headwind must be between -1 and 5 m/s.");
+          return false;
+        }
+
+        // Validate surface
+        if (surface === "") {
+          showError("Please select a surface.");
+          return false;
+        }
+
+        // If all inputs are valid, return true
+        return true;
+      }
+
       function calculateResult(event) {
         event.preventDefault(); // Prevent form submission
+
+        document.getElementById("error").textContent = "";
+        showLoading();
 
         // Get input values
         const weight = document.getElementById("weight").value;
@@ -217,54 +304,7 @@
         const surface = document.getElementById("surface").value;
 
         // Validate inputs
-        if (weight < 25 || weight > 100 || isNaN(weight)) {
-          alert("Weight must be between 25 and 100 kg.");
-          return;
-        }
-
-        if (gender === "") {
-          alert("Please select a gender.");
-          return;
-        }
-
-        if (height < 0 || height > 3 || isNaN(height)) {
-          alert("Height must be between 0 and 3 meters.");
-          return;
-        }
-
-        if (cadence <= 0 || isNaN(cadence)) {
-          alert("Cadence must be a positive number.");
-          return;
-        }
-
-        if (
-          paceMin < 0 ||
-          paceSec < 0 ||
-          paceSec > 59 ||
-          isNaN(paceMin) ||
-          isNaN(paceSec)
-        ) {
-          alert("Pace must be a valid time in minutes and seconds.");
-          return;
-        }
-
-        if (slope < 0 || slope > 100 || isNaN(slope)) {
-          alert("Slope must be between 0 and 100%.");
-          return;
-        }
-
-        if (strike === "") {
-          alert("Please select a strike pattern.");
-          return;
-        }
-
-        if (headwind < -1 || headwind > 5 || isNaN(headwind)) {
-          alert("Headwind must be between -1 and 5 m/s.");
-          return;
-        }
-
-        if (surface === "") {
-          alert("Please select a surface.");
+        if (!validateInputs(weight, gender, height, cadence, paceMin, paceSec, slope, strike, headwind, surface)) {
           return;
         }
 
@@ -278,6 +318,10 @@
         })
           .then((response) => response.json())
           .then((data) => {
+            if (data.error) {
+              showError(data.error);
+              return;
+            }
             document.getElementById("result").textContent = data.result;
           })
           .catch((error) => {

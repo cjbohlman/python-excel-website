@@ -50,8 +50,6 @@ def index():
 
 @app.route('/calc', methods=['POST'])
 def calc():
-    error = None
-    print(request.form)
     if request.method == 'POST':
         weight = int(request.form['weight']) # integer between 25 and 100
         gender = request.form['gender'] # string either M or F
@@ -64,22 +62,24 @@ def calc():
         headwind = float(request.form['headwind']) # float between -1 and 5 m/s
         surface = request.form['surface'] # string either Road or trail
 
-        print(validate_inputs(weight, gender, height, cadence, pace_min, pace_sec, slope, strike, headwind, surface))
+        validation_output = validate_inputs(weight, gender, height, cadence, pace_min, pace_sec, slope, strike, headwind, surface)
+        if validation_output:
+            return {"error": validation_output}
 
         run_sheet = xw.Book("Vimazi 2.0 walking running.xlsx").sheets[1]
         print(run_sheet.range('C5').value)
 
         # Change the values of the cells
         run_sheet.range('C5').value = weight
-        # run_sheet.range('C6').value = gender
-        # run_sheet.range('C7').value = height
-        # run_sheet.range('C8').value = cadence
-        # run_sheet.range('C9').value = strike
-        # run_sheet.range('C11').value = pace_min
-        # run_sheet.range('D11').value = pace_sec
-        # run_sheet.range('C12').value = slope
-        # run_sheet.range('C13').value = headwind
-        # run_sheet.range('C14').value = surface
+        run_sheet.range('C6').value = gender
+        run_sheet.range('C7').value = height
+        run_sheet.range('C8').value = cadence
+        run_sheet.range('C9').value = strike
+        run_sheet.range('C11').value = pace_min
+        run_sheet.range('D11').value = pace_sec
+        run_sheet.range('C12').value = slope
+        run_sheet.range('C13').value = headwind
+        run_sheet.range('C14').value = surface
 
         run_sheet.book.save()
 
@@ -88,11 +88,6 @@ def calc():
 
         # Print the cell value
         print(result)
-
-        chart = run_sheet.charts[1]
-        print(chart.name)
-        chart_image_path = os.path.join('static', 'chart.png')
-        # chart.api.Export(chart_image_path)
 
         # Close the workbook
         run_sheet.book.close()
