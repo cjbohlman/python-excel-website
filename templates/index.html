@@ -216,7 +216,7 @@
 
       <div>
         <h3>Plot</h3>
-        <img id="plot-img" src="" alt="Plot" style="max-width: 100%" />
+        <img id="plot-img" src="" style="display: none;" alt="Plot" style="max-width: 100%" />
         <button onclick="getPlot()">Load Plot</button>
       </div>
     </div>
@@ -306,6 +306,7 @@
           // Create an image element and set its source to the object URL
           const plotImg = document.getElementById('plot-img');
           plotImg.src = imgUrl;
+          plotImg.style.display = 'block';
         })
         .catch(error => {
           console.error('There was a problem with the fetch operation:', error);
