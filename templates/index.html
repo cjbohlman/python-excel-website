@@ -213,6 +213,12 @@
       </form>
       <div class="output" id="result"></div>
       <div class="error" id="error"></div>
+
+      <div>
+        <h3>Plot</h3>
+        <img id="plot-img" src="" alt="Plot" style="max-width: 100%" />
+        <button onclick="getPlot()">Load Plot</button>
+      </div>
     </div>
 
     <script>
@@ -283,6 +289,28 @@
 
         // If all inputs are valid, return true
         return true;
+      }
+
+      function getPlot() {
+        fetch('/plot.png')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          // Create an object URL from the blob
+          const imgUrl = URL.createObjectURL(blob);
+
+          // Create an image element and set its source to the object URL
+          const plotImg = document.getElementById('plot-img');
+          plotImg.src = imgUrl;
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+          alert('Error loading plot.');
+        });
       }
 
       function calculateResult(event) {

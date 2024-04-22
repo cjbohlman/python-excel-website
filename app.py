@@ -1,6 +1,11 @@
-from flask import Flask, request, abort, render_template
+from flask import Flask, request, abort, render_template, send_file
 import xlwings as xw
-import os
+from io import BytesIO
+import io
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 
 def validate_inputs(weight, gender, height, cadence, pace_min, pace_sec, slope, strike, headwind, surface):
     # Validate weight
@@ -41,6 +46,19 @@ def validate_inputs(weight, gender, height, cadence, pace_min, pace_sec, slope, 
 
     # If all inputs are valid, return None
     return None
+
+def get_chart_data():
+    run_sheet = xw.Book("Vimazi 2.0 walking running.xlsx").sheets[5]
+    x_data = run_sheet.range('S9:S29').value
+    y_data1_name = run_sheet.range('T8').value
+    y_data1 = run_sheet.range('T9:T29').value
+    y_data2_name = run_sheet.range('Z8').value
+    y_data2 = run_sheet.range('Z9:Z29').value
+    y_data3_name = run_sheet.range('AB8').value
+    y_data3 = run_sheet.range('AB9:AB29').value
+    run_sheet.book.close()
+    y_data = [(y_data1_name, y_data1), (y_data2_name, y_data2), (y_data3_name, y_data3)]
+    return x_data, y_data
 
 app = Flask(__name__)
 
@@ -94,6 +112,38 @@ def calc():
 
         return {"result": result}
     abort(404, description="Invalid request")
+
+@app.route('/plot.png')
+def plot_png():
+    # Create a BytesIO object for storing the image
+    img = BytesIO()
+
+    # Create a figure and axes
+    fig, ax = plt.subplots()
+
+    # get data
+    x_data, y_data_list = get_chart_data()
+
+    # Plot the data
+    for y_data_name, y_data in y_data_list:
+      ax.plot(x_data, y_data, label=y_data_name)
+
+    # Set labels and title
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Force (N)')
+    ax.set_title('Heel vs Forefoot Force')
+    ax.legend()
+
+    # Save the plot to a BytesIO object
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+
+    # Clear the plot to release memory
+    plt.clf()
+
+    return send_file(buffer, mimetype='image/png')
+
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
