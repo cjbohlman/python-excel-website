@@ -95,6 +95,31 @@
       .error:empty {
         display: none;
       }
+
+      /* Desktop styles */
+      @media (min-width: 768px) {
+        #plot-img {
+          max-width: 100%;
+          height: auto;
+        }
+      }
+
+      /* Mobile styles */
+      @media (max-width: 767px) {
+        #plot-img {
+          max-height: 80vh;
+          width: auto;
+        }
+      }
+
+      .plot-container {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .plot-container button {
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
@@ -214,9 +239,9 @@
       <div class="output" id="result"></div>
       <div class="error" id="error"></div>
 
-      <div>
+      <div class="plot-container">
         <h3>Plot</h3>
-        <img id="plot-img" src="" style="display: none;" alt="Plot" style="max-width: 100%" />
+        <img id="plot-img" src="" alt="Plot" style="display: none" />
         <button onclick="getPlot()">Load Plot</button>
       </div>
     </div>
@@ -232,7 +257,18 @@
         document.getElementById("result").textContent = "Loading...";
       }
 
-      function validateInputs(weight, gender, height, cadence, paceMin, paceSec, slope, strike, headwind, surface) {
+      function validateInputs(
+        weight,
+        gender,
+        height,
+        cadence,
+        paceMin,
+        paceSec,
+        slope,
+        strike,
+        headwind,
+        surface
+      ) {
         // Validate weight
         if (weight < 25 || weight > 100 || isNaN(weight)) {
           showError("Weight must be between 25 and 100 kg.");
@@ -258,7 +294,13 @@
         }
 
         // Validate pace
-        if (paceMin < 0 || paceSec < 0 || paceSec > 59 || isNaN(paceMin) || isNaN(paceSec)) {
+        if (
+          paceMin < 0 ||
+          paceSec < 0 ||
+          paceSec > 59 ||
+          isNaN(paceMin) ||
+          isNaN(paceSec)
+        ) {
           showError("Pace must be a valid time in minutes and seconds.");
           return false;
         }
@@ -292,26 +334,29 @@
       }
 
       function getPlot() {
-        fetch('/plot.png')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.blob();
-        })
-        .then(blob => {
-          // Create an object URL from the blob
-          const imgUrl = URL.createObjectURL(blob);
+        fetch("/plot.png")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.blob();
+          })
+          .then((blob) => {
+            // Create an object URL from the blob
+            const imgUrl = URL.createObjectURL(blob);
 
-          // Create an image element and set its source to the object URL
-          const plotImg = document.getElementById('plot-img');
-          plotImg.src = imgUrl;
-          plotImg.style.display = 'block';
-        })
-        .catch(error => {
-          console.error('There was a problem with the fetch operation:', error);
-          alert('Error loading plot.');
-        });
+            // Create an image element and set its source to the object URL
+            const plotImg = document.getElementById("plot-img");
+            plotImg.src = imgUrl;
+            plotImg.style.display = "block";
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+            alert("Error loading plot.");
+          });
       }
 
       function calculateResult(event) {
@@ -333,7 +378,20 @@
         const surface = document.getElementById("surface").value;
 
         // Validate inputs
-        if (!validateInputs(weight, gender, height, cadence, paceMin, paceSec, slope, strike, headwind, surface)) {
+        if (
+          !validateInputs(
+            weight,
+            gender,
+            height,
+            cadence,
+            paceMin,
+            paceSec,
+            slope,
+            strike,
+            headwind,
+            surface
+          )
+        ) {
           return;
         }
 
