@@ -58,7 +58,7 @@
         flex: 1;
       }
 
-      button[type="submit"] {
+      button[type="submit"], .button {
         padding: 10px 20px;
         background-color: #4caf50;
         color: white;
@@ -69,7 +69,7 @@
         transition: background-color 0.3s ease;
       }
 
-      button[type="submit"]:hover {
+      button[type="submit"]:hover, .button:hover {
         background-color: #45a049;
       }
 
@@ -115,10 +115,14 @@
       .plot-container {
         margin-top: 20px;
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
       }
 
-      .plot-container button {
+      .plot-container .button {
         margin-top: 10px;
+        width: fit-content;
       }
     </style>
   </head>
@@ -234,7 +238,7 @@
             <option value="trail">Trail</option>
           </select>
         </div>
-        <button type="submit">Calculate</button>
+        <button class="button" type="submit">Calculate</button>
       </form>
       <div class="output" id="result"></div>
       <div class="error" id="error"></div>
@@ -242,7 +246,7 @@
       <div class="plot-container">
         <h3>Plot</h3>
         <img id="plot-img" src="" alt="Plot" style="display: none" />
-        <button onclick="getPlot()">Load Plot</button>
+        <button class="button" onclick="getPlot()">Load Plot</button>
       </div>
     </div>
 
